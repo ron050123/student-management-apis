@@ -1,0 +1,57 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Class {
+  id: Int!
+  name: String!
+  subject: String!
+  teacher: User!
+  enrollments: [Enrollment!]!
+}
+
+type Enrollment {
+  id: Int!
+  student: User!
+  class: Class!
+}
+
+type User {
+  id: Int!
+  username: String!
+  password: String!
+  role: String!
+}
+
+type Query {
+  user(id: Float!): User!
+  classes: [Class!]!
+  class(id: Float!): Class!
+  enrollmentsByStudent(studentId: Float!): [Enrollment!]!
+  enrollmentsByClass(classId: Float!): [Enrollment!]!
+  checkAuth: String!
+}
+
+type Mutation {
+  createUser(createUserDto: CreateUserDto!): User!
+  updateUser(id: Float!, username: String!, password: String!): User!
+  createClass(createClassDto: CreateClassDto!): Class!
+  updateClass(id: Float!, name: String!, subject: String!): Class!
+  deleteClass(id: Float!): Boolean!
+  enrollStudent(studentId: Float!, classId: Float!): Enrollment!
+  removeEnrollment(id: Float!): Boolean!
+  login(username: String!, password: String!): String!
+  register(username: String!, password: String!, role: String!): Boolean!
+}
+
+input CreateUserDto {
+  username: String!
+  password: String!
+  role: String!
+}
+
+input CreateClassDto {
+  name: String!
+  subject: String!
+  teacherId: Int!
+}
