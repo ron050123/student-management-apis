@@ -14,10 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnrollmentResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const common_1 = require("@nestjs/common");
 const enrollment_service_1 = require("./enrollment.service");
 const enrollment_entity_1 = require("./enrollment.entity");
 const user_entity_1 = require("../user/user.entity");
 const class_entity_1 = require("../class/class.entity");
+const role_enum_1 = require("../user/role.enum");
+const roles_decorator_1 = require("../auth/roles.decorator");
+const roles_guard_1 = require("../auth/roles.guard");
+const gql_auth_guard_1 = require("../auth/gql-auth.guard");
 let EnrollmentResolver = class EnrollmentResolver {
     constructor(enrollmentService) {
         this.enrollmentService = enrollmentService;
@@ -47,6 +52,8 @@ let EnrollmentResolver = class EnrollmentResolver {
 exports.EnrollmentResolver = EnrollmentResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => enrollment_entity_1.Enrollment),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __param(0, (0, graphql_1.Args)('studentId')),
     __param(1, (0, graphql_1.Args)('classId')),
     __metadata("design:type", Function),
@@ -55,6 +62,8 @@ __decorate([
 ], EnrollmentResolver.prototype, "enrollStudent", null);
 __decorate([
     (0, graphql_1.Query)(() => [enrollment_entity_1.Enrollment]),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __param(0, (0, graphql_1.Args)('studentId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -62,6 +71,8 @@ __decorate([
 ], EnrollmentResolver.prototype, "enrollmentsByStudent", null);
 __decorate([
     (0, graphql_1.Query)(() => [enrollment_entity_1.Enrollment]),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __param(0, (0, graphql_1.Args)('classId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -69,6 +80,8 @@ __decorate([
 ], EnrollmentResolver.prototype, "enrollmentsByClass", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

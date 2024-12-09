@@ -19,6 +19,10 @@ const class_entity_1 = require("./class.entity");
 const user_entity_1 = require("../user/user.entity");
 const create_class_dto_1 = require("../dto/create-class.dto");
 const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../auth/gql-auth.guard");
+const role_enum_1 = require("../user/role.enum");
+const roles_decorator_1 = require("../auth/roles.decorator");
+const roles_guard_1 = require("../auth/roles.guard");
 let ClassResolver = class ClassResolver {
     constructor(classService) {
         this.classService = classService;
@@ -47,6 +51,8 @@ exports.ClassResolver = ClassResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => class_entity_1.Class),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER),
     __param(0, (0, graphql_1.Args)('createClassDto')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_class_dto_1.CreateClassDto]),
@@ -54,12 +60,16 @@ __decorate([
 ], ClassResolver.prototype, "createClass", null);
 __decorate([
     (0, graphql_1.Query)(() => [class_entity_1.Class]),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ClassResolver.prototype, "classes", null);
 __decorate([
     (0, graphql_1.Query)(() => class_entity_1.Class),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -68,6 +78,8 @@ __decorate([
 __decorate([
     (0, graphql_1.Mutation)(() => class_entity_1.Class),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER),
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, graphql_1.Args)('name')),
     __param(2, (0, graphql_1.Args)('subject')),
@@ -77,6 +89,8 @@ __decorate([
 ], ClassResolver.prototype, "updateClass", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
