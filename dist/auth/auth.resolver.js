@@ -17,6 +17,7 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_service_1 = require("./auth.service");
 const common_1 = require("@nestjs/common");
 const gql_auth_guard_1 = require("./gql-auth.guard");
+const role_enum_1 = require("../user/role.enum");
 let AuthResolver = class AuthResolver {
     constructor(authService) {
         this.authService = authService;

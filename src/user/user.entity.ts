@@ -1,6 +1,7 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Enrollment } from '../enrollment/enrollment.entity';
+import { Role } from './role.enum';
 
 @ObjectType()
 @Entity()
@@ -17,9 +18,12 @@ export class User {
   @Column()
   password: string;
 
-  @Field()
-  @Column()
-  role: string; // 'student' or 'teacher'
+  @Field(() => String)
+  @Column({
+    type: 'enum',
+    enum: Role,
+  })
+  role: Role;
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.student)
   enrollments: Enrollment[];

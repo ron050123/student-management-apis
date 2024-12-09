@@ -13,7 +13,9 @@ const graphql_1 = require("@nestjs/graphql");
 let GqlAuthGuard = class GqlAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     getRequest(context) {
         const ctx = graphql_1.GqlExecutionContext.create(context);
-        return ctx.getContext().req;
+        const request = ctx.getContext().req;
+        console.log("Request User from GqlAuthGuard:", request.user);
+        return request;
     }
 };
 exports.GqlAuthGuard = GqlAuthGuard;

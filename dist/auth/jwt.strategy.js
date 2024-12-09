@@ -24,7 +24,13 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.userService = userService;
     }
     async validate(payload) {
-        return this.userService.findUserById(payload.sub);
+        console.log("Decoded Payload:", payload);
+        console.log('Payload role:', payload.role);
+        const user = await this.userService.findUserById(payload.sub);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return { ...user, role: payload.role };
     }
 };
 exports.JwtStrategy = JwtStrategy;

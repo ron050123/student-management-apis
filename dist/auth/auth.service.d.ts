@@ -1,5 +1,6 @@
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '../user/role.enum';
 export declare class AuthService {
     private userService;
     private jwtService;
@@ -8,5 +9,5 @@ export declare class AuthService {
     login(user: any): Promise<{
         access_token: string;
     }>;
-    register(username: string, password: string, role: string): Promise<import("../user/user.entity").User>;
+    register(username: string, password: string, role: Role): Promise<import("../user/user.entity").User>;
 }

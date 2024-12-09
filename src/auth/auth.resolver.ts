@@ -2,6 +2,7 @@ import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './gql-auth.guard';
+import { Role } from '../user/role.enum';
 
 @Resolver()
 export class AuthResolver {
@@ -30,7 +31,7 @@ async login(
   async register(
     @Args('username') username: string,
     @Args('password') password: string,
-    @Args('role') role: string,
+    @Args('role') role: Role,
   ): Promise<boolean> {
     await this.authService.register(username, password, role);
     return true;

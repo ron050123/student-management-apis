@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserDto = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
+const role_enum_1 = require("../user/role.enum");
 let CreateUserDto = class CreateUserDto {
 };
 exports.CreateUserDto = CreateUserDto;
@@ -30,7 +31,7 @@ __decorate([
 ], CreateUserDto.prototype, "password", void 0);
 __decorate([
     (0, graphql_1.Field)(),
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsEnum)(role_enum_1.Role),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "role", void 0);

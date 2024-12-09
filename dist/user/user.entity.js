@@ -13,6 +13,7 @@ exports.User = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const typeorm_1 = require("typeorm");
 const enrollment_entity_1 = require("../enrollment/enrollment.entity");
+const role_enum_1 = require("./role.enum");
 let User = class User {
 };
 exports.User = User;
@@ -32,8 +33,11 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
-    (0, typeorm_1.Column)(),
+    (0, graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: role_enum_1.Role,
+    }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([
