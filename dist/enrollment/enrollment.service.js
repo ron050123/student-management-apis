@@ -44,8 +44,10 @@ let EnrollmentService = class EnrollmentService {
             if (isNaN(enrollment.class.currentStudentsCount)) {
                 enrollment.class.currentStudentsCount = 0;
             }
-            enrollment.class.currentStudentsCount--;
-            await this.classRepository.save(enrollment.class);
+            if (enrollment.class.currentStudentsCount > 0) {
+                enrollment.class.currentStudentsCount--;
+                await this.classRepository.save(enrollment.class);
+            }
             await this.enrollmentRepository.delete(id);
         }
     }
