@@ -1,6 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Role } from '../user/role.enum'; 
 import { ROLES_KEY } from './roles.decorator'; 

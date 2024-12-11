@@ -27,7 +27,7 @@ export class Class {
   classLeader: User;
 
   @Field(() => Int)
-  @Column({ default: 0 }) // Tracks current student count
+  @Column({ default: 0 })
   currentStudentsCount: number;
 
   @Field(() => [Enrollment])
