@@ -4,10 +4,10 @@ import { User } from '../user/user.entity';
 import { Class } from '../class/class.entity';
 export declare class EnrollmentService {
     private enrollmentRepository;
-    constructor(enrollmentRepository: Repository<Enrollment>);
+    private classRepository;
+    constructor(enrollmentRepository: Repository<Enrollment>, classRepository: Repository<Class>);
     enrollStudent(student: User, classEntity: Class): Promise<Enrollment>;
     findEnrollmentsByStudent(student: User): Promise<Enrollment[]>;
     findEnrollmentsByClass(classEntity: Class): Promise<Enrollment[]>;
     removeEnrollment(id: number): Promise<void>;
-    searchEnrollmentsByStudent(studentId: number, className: string, teacherName: string): Promise<Enrollment[]>;
 }

@@ -38,6 +38,16 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], Class.prototype, "teacher", void 0);
 __decorate([
+    (0, graphql_1.Field)(() => user_entity_1.User, { nullable: true }),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, { nullable: true }),
+    __metadata("design:type", user_entity_1.User)
+], Class.prototype, "classLeader", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Class.prototype, "currentStudentsCount", void 0);
+__decorate([
     (0, graphql_1.Field)(() => [enrollment_entity_1.Enrollment]),
     (0, typeorm_1.OneToMany)(() => enrollment_entity_1.Enrollment, (enrollment) => enrollment.class),
     __metadata("design:type", Array)

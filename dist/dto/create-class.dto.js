@@ -33,6 +33,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateClassDto.prototype, "teacherId", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateClassDto.prototype, "classLeaderId", void 0);
 exports.CreateClassDto = CreateClassDto = __decorate([
     (0, graphql_1.InputType)()
 ], CreateClassDto);

@@ -7,6 +7,7 @@ export declare class ClassResolver {
     createClass(createClassDto: CreateClassDto): Promise<Class>;
     classes(): Promise<Class[]>;
     class(id: number): Promise<Class>;
-    updateClass(id: number, name: string, subject: string): Promise<Class>;
+    updateClass(id: number, name: string, subject: string, classLeaderId: number): Promise<Class>;
     deleteClass(id: number): Promise<boolean>;
+    searchClasses(name?: string, teacherName?: string, classLeaderName?: string): Promise<Class[]>;
 }

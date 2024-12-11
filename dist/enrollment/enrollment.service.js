@@ -17,12 +17,19 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const enrollment_entity_1 = require("./enrollment.entity");
+const class_entity_1 = require("../class/class.entity");
 let EnrollmentService = class EnrollmentService {
-    constructor(enrollmentRepository) {
+    constructor(enrollmentRepository, classRepository) {
         this.enrollmentRepository = enrollmentRepository;
+        this.classRepository = classRepository;
     }
     async enrollStudent(student, classEntity) {
+        if (isNaN(classEntity.currentStudentsCount)) {
+            classEntity.currentStudentsCount = 0;
+        }
         const enrollment = this.enrollmentRepository.create({ student, class: classEntity });
+        classEntity.currentStudentsCount++;
+        await this.classRepository.save(classEntity);
         return this.enrollmentRepository.save(enrollment);
     }
     async findEnrollmentsByStudent(student) {
@@ -32,26 +39,23 @@ let EnrollmentService = class EnrollmentService {
         return this.enrollmentRepository.find({ where: { class: classEntity }, relations: ['student'] });
     }
     async removeEnrollment(id) {
-        await this.enrollmentRepository.delete(id);
-    }
-    async searchEnrollmentsByStudent(studentId, className, teacherName) {
-        const query = this.enrollmentRepository.createQueryBuilder('enrollment')
-            .leftJoinAndSelect('enrollment.class', 'class')
-            .leftJoinAndSelect('class.teacher', 'teacher')
-            .where('enrollment.studentId = :studentId', { studentId });
-        if (className) {
-            query.andWhere('class.name ILIKE :className', { className: `%${className}%` });
+        const enrollment = await this.enrollmentRepository.findOne({ where: { id }, relations: ['class'] });
+        if (enrollment && enrollment.class) {
+            if (isNaN(enrollment.class.currentStudentsCount)) {
+                enrollment.class.currentStudentsCount = 0;
+            }
+            enrollment.class.currentStudentsCount--;
+            await this.classRepository.save(enrollment.class);
+            await this.enrollmentRepository.delete(id);
         }
-        if (teacherName) {
-            query.andWhere('teacher.username ILIKE :teacherName', { teacherName: `%${teacherName}%` });
-        }
-        return query.getMany();
     }
 };
 exports.EnrollmentService = EnrollmentService;
 exports.EnrollmentService = EnrollmentService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(enrollment_entity_1.Enrollment)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(class_entity_1.Class)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], EnrollmentService);
 //# sourceMappingURL=enrollment.service.js.map

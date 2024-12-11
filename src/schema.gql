@@ -7,6 +7,8 @@ type Class {
   name: String!
   subject: String!
   teacher: User!
+  classLeader: User
+  currentStudentsCount: Int!
   enrollments: [Enrollment!]!
 }
 
@@ -27,6 +29,7 @@ type Query {
   user(id: Float!): User!
   classes: [Class!]!
   class(id: Float!): Class!
+  searchClasses(name: String, teacherName: String, classLeaderName: String): [Class!]!
   enrollmentsByStudent(studentId: Float!): [Enrollment!]!
   enrollmentsByClass(classId: Float!): [Enrollment!]!
   checkAuth: String!
@@ -34,9 +37,9 @@ type Query {
 
 type Mutation {
   createUser(createUserDto: CreateUserDto!): User!
-  updateUser(id: Float!, username: String!, password: String!): User!
+  updateUser(id: String!, username: String!, password: String!): User!
   createClass(createClassDto: CreateClassDto!): Class!
-  updateClass(id: Float!, name: String!, subject: String!): Class!
+  updateClass(id: Float!, name: String!, subject: String!, classLeaderId: Float!): Class!
   deleteClass(id: Float!): Boolean!
   enrollStudent(studentId: Float!, classId: Float!): Enrollment!
   removeEnrollment(id: Float!): Boolean!
@@ -54,4 +57,5 @@ input CreateClassDto {
   name: String!
   subject: String!
   teacherId: Int!
+  classLeaderId: Int
 }

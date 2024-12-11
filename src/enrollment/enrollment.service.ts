@@ -10,10 +10,17 @@ export class EnrollmentService {
   constructor(
     @InjectRepository(Enrollment)
     private enrollmentRepository: Repository<Enrollment>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
   ) {}
 
   async enrollStudent(student: User, classEntity: Class): Promise<Enrollment> {
+    if (isNaN(classEntity.currentStudentsCount)) {
+      classEntity.currentStudentsCount = 0; 
+    }
     const enrollment = this.enrollmentRepository.create({ student, class: classEntity });
+    classEntity.currentStudentsCount++;
+    await this.classRepository.save(classEntity);
     return this.enrollmentRepository.save(enrollment);
   }
 
@@ -26,23 +33,15 @@ export class EnrollmentService {
   }
 
   async removeEnrollment(id: number): Promise<void> {
+    const enrollment = await this.enrollmentRepository.findOne({ where: { id }, relations: ['class'] });
+
+    if (enrollment && enrollment.class) {
+      if (isNaN(enrollment.class.currentStudentsCount)) {
+        enrollment.class.currentStudentsCount = 0; 
+      }
+      enrollment.class.currentStudentsCount--;
+      await this.classRepository.save(enrollment.class);
     await this.enrollmentRepository.delete(id);
-  }
-
-  async searchEnrollmentsByStudent(studentId: number, className: string, teacherName: string): Promise<Enrollment[]> {
-    const query = this.enrollmentRepository.createQueryBuilder('enrollment')
-      .leftJoinAndSelect('enrollment.class', 'class')
-      .leftJoinAndSelect('class.teacher', 'teacher')
-      .where('enrollment.studentId = :studentId', { studentId });
-
-    if (className) {
-      query.andWhere('class.name ILIKE :className', { className: `%${className}%` });
     }
-
-    if (teacherName) {
-      query.andWhere('teacher.username ILIKE :teacherName', { teacherName: `%${teacherName}%` });
-    }
-
-    return query.getMany();
   }
 }

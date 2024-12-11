@@ -5,5 +5,7 @@ export declare class Class {
     name: string;
     subject: string;
     teacher: User;
+    classLeader: User;
+    currentStudentsCount: number;
     enrollments: Enrollment[];
 }

@@ -20,10 +20,18 @@ export class ClassResolver {
   async createClass(
     @Args('createClassDto') createClassDto: CreateClassDto,
   ): Promise<Class> {
-    const { name, subject, teacherId } = createClassDto;
+    const { name, subject, teacherId, classLeaderId } = createClassDto;
+
     const teacher = new User();
     teacher.id = teacherId;
-    return this.classService.createClass(name, subject, teacher);
+
+    let classLeader: User | null = null;
+    if (classLeaderId) {
+      classLeader = new User();
+      classLeader.id = classLeaderId;
+    }
+
+    return this.classService.createClass(name, subject, teacher, classLeader);
   }
 
   @Query(() => [Class])
@@ -48,8 +56,15 @@ export class ClassResolver {
     @Args('id') id: number,
     @Args('name') name: string,
     @Args('subject') subject: string,
+    @Args('classLeaderId') classLeaderId: number,
   ): Promise<Class> {
-    return this.classService.updateClass(id, name, subject);
+    let classLeader: User | null = null;
+    if (classLeaderId) {
+      classLeader = new User();
+      classLeader.id = classLeaderId;
+    }
+
+    return this.classService.updateClass(id, name, subject, classLeader);
   }
 
   @Mutation(() => Boolean)
@@ -58,5 +73,16 @@ export class ClassResolver {
   async deleteClass(@Args('id') id: number): Promise<boolean> {
     await this.classService.deleteClass(id);
     return true;
+  }
+
+  @Query(() => [Class])
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.STUDENT)
+  async searchClasses(
+    @Args('name', { nullable: true }) name?: string,
+    @Args('teacherName', { nullable: true }) teacherName?: string,
+    @Args('classLeaderName', { nullable: true }) classLeaderName?: string,
+  ): Promise<Class[]> {
+    return this.classService.searchClasses(name, teacherName, classLeaderName);
   }
 }

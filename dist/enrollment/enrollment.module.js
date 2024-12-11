@@ -12,12 +12,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const enrollment_entity_1 = require("./enrollment.entity");
 const enrollment_service_1 = require("./enrollment.service");
 const enrollment_resolver_1 = require("./enrollment.resolver");
+const class_entity_1 = require("../class/class.entity");
+const user_entity_1 = require("../user/user.entity");
 let EnrollmentModule = class EnrollmentModule {
 };
 exports.EnrollmentModule = EnrollmentModule;
 exports.EnrollmentModule = EnrollmentModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([enrollment_entity_1.Enrollment])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([enrollment_entity_1.Enrollment, class_entity_1.Class, user_entity_1.User])],
         providers: [enrollment_service_1.EnrollmentService, enrollment_resolver_1.EnrollmentResolver],
     })
 ], EnrollmentModule);

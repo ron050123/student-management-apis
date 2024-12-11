@@ -18,6 +18,7 @@ const auth_service_1 = require("./auth.service");
 const common_1 = require("@nestjs/common");
 const gql_auth_guard_1 = require("./gql-auth.guard");
 const role_enum_1 = require("../user/role.enum");
+const user_entity_1 = require("../user/user.entity");
 let AuthResolver = class AuthResolver {
     constructor(authService) {
         this.authService = authService;
@@ -36,6 +37,10 @@ let AuthResolver = class AuthResolver {
     async register(username, password, role) {
         await this.authService.register(username, password, role);
         return true;
+    }
+    async updateUser(id, username, password) {
+        const numericId = parseInt(id, 10);
+        return this.authService.updateUser(numericId, username, password);
     }
 };
 exports.AuthResolver = AuthResolver;
@@ -63,6 +68,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "register", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => user_entity_1.User),
+    __param(0, (0, graphql_1.Args)('id')),
+    __param(1, (0, graphql_1.Args)('username')),
+    __param(2, (0, graphql_1.Args)('password')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "updateUser", null);
 exports.AuthResolver = AuthResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

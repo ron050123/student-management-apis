@@ -37,6 +37,10 @@ let AuthService = class AuthService {
         const hashedPassword = await bcrypt.hash(password, 10);
         return this.userService.createUser(username, hashedPassword, role);
     }
+    async updateUser(id, username, password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.userService.updateUser(id, username, hashedPassword);
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Role } from '../user/role.enum';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -30,5 +31,10 @@ export class AuthService {
   async register(username: string, password: string, role: Role) {
     const hashedPassword = await bcrypt.hash(password, 10);
     return this.userService.createUser(username, hashedPassword, role);
+  }
+
+  async updateUser(id: number, username: string, password: string): Promise<User> {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return this.userService.updateUser(id, username, hashedPassword);
   }
 }

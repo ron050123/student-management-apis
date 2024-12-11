@@ -22,6 +22,14 @@ export class Class {
   @ManyToOne(() => User, (user) => user.id)
   teacher: User;
 
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true })
+  classLeader: User;
+
+  @Field(() => Int)
+  @Column({ default: 0 }) // Tracks current student count
+  currentStudentsCount: number;
+
   @Field(() => [Enrollment])
   @OneToMany(() => Enrollment, (enrollment) => enrollment.class)
   enrollments: Enrollment[];

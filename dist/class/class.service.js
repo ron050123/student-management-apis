@@ -21,20 +21,28 @@ let ClassService = class ClassService {
     constructor(classRepository) {
         this.classRepository = classRepository;
     }
-    async createClass(name, subject, teacher) {
-        const classEntity = this.classRepository.create({ name, subject, teacher });
+    async createClass(name, subject, teacher, classLeader) {
+        const classEntity = this.classRepository.create({
+            name,
+            subject,
+            teacher,
+            classLeader,
+            currentStudentsCount: 0,
+        });
         return this.classRepository.save(classEntity);
     }
     async findAllClasses() {
-        return this.classRepository.find({ relations: ['teacher', 'enrollments'] });
+        return this.classRepository.find({
+            relations: ['teacher', 'enrollments', 'classLeader'],
+        });
     }
     async findClassById(id) {
         return this.classRepository.findOne({
             where: { id },
-            relations: ['teacher', 'enrollments'],
+            relations: ['teacher', 'enrollments', 'classLeader'],
         });
     }
-    async updateClass(id, name, subject) {
+    async updateClass(id, name, subject, classLeader) {
         const classEntity = await this.classRepository.findOne({
             where: { id },
         });
@@ -43,6 +51,7 @@ let ClassService = class ClassService {
         }
         classEntity.name = name;
         classEntity.subject = subject;
+        classEntity.classLeader = classLeader;
         return this.classRepository.save(classEntity);
     }
     async deleteClass(id) {
@@ -50,6 +59,9 @@ let ClassService = class ClassService {
             where: { id },
             relations: ['enrollments'],
         });
+        if (!classEntity) {
+            throw new Error('Class not found');
+        }
         if (classEntity.enrollments.length < 5) {
             await this.classRepository.delete(id);
         }
@@ -57,14 +69,18 @@ let ClassService = class ClassService {
             throw new Error('Cannot delete class with 5 or more students');
         }
     }
-    async searchClasses(name, teacherName) {
+    async searchClasses(name, teacherName, classLeaderName) {
         const query = this.classRepository.createQueryBuilder('class')
-            .leftJoinAndSelect('class.teacher', 'teacher');
+            .leftJoinAndSelect('class.teacher', 'teacher')
+            .leftJoinAndSelect('class.classLeader', 'classLeader');
         if (name) {
             query.andWhere('class.name ILIKE :name', { name: `%${name}%` });
         }
         if (teacherName) {
             query.andWhere('teacher.username ILIKE :teacherName', { teacherName: `%${teacherName}%` });
+        }
+        if (classLeaderName) {
+            query.andWhere('classLeader.username ILIKE :classLeaderName', { classLeaderName: `%${classLeaderName}%` });
         }
         return query.getMany();
     }

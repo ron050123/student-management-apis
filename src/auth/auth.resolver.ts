@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './gql-auth.guard';
 import { Role } from '../user/role.enum';
+import { User } from '../user/user.entity';
 
 @Resolver()
 export class AuthResolver {
@@ -15,7 +16,7 @@ export class AuthResolver {
 }
 
   @Mutation(() => String)
-async login(
+  async login(
   @Args('username') username: string,
   @Args('password') password: string,
 ): Promise<string> {
@@ -35,5 +36,15 @@ async login(
   ): Promise<boolean> {
     await this.authService.register(username, password, role);
     return true;
+  }
+
+  @Mutation(() => User)
+  async updateUser(
+    @Args('id') id: string,
+    @Args('username') username: string,
+    @Args('password') password: string,
+  ): Promise<User> {
+    const numericId = parseInt(id, 10); // Convert id to number
+    return this.authService.updateUser(numericId, username, password);
   }
 }
