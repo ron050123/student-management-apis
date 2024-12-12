@@ -6,6 +6,6 @@ export declare class AuthResolver {
     constructor(authService: AuthService);
     checkAuth(): string;
     login(username: string, password: string): Promise<string>;
-    register(username: string, password: string, role: Role): Promise<boolean>;
+    register(username: string, password: string, role: Role): Promise<User>;
     updateUser(id: string, username: string, password: string): Promise<User>;
 }

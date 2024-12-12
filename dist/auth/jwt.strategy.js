@@ -30,7 +30,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!user) {
             throw new Error('User not found');
         }
-        return { ...user, role: payload.role };
+        return { id: payload.sub, username: payload.username, role: payload.role };
     }
 };
 exports.JwtStrategy = JwtStrategy;

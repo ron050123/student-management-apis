@@ -23,11 +23,15 @@ const role_enum_1 = require("../user/role.enum");
 const roles_decorator_1 = require("../auth/roles.decorator");
 const roles_guard_1 = require("../auth/roles.guard");
 const gql_auth_guard_1 = require("../auth/gql-auth.guard");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let EnrollmentResolver = class EnrollmentResolver {
     constructor(enrollmentService) {
         this.enrollmentService = enrollmentService;
     }
-    async enrollStudent(studentId, classId) {
+    async enrollStudent(studentId, classId, user) {
+        if (user.id !== studentId) {
+            throw new common_1.UnauthorizedException('You can only enroll yourself.');
+        }
         const student = new user_entity_1.User();
         student.id = studentId;
         const classEntity = new class_entity_1.Class();
@@ -56,8 +60,9 @@ __decorate([
     (0, roles_decorator_1.Roles)(role_enum_1.Role.TEACHER, role_enum_1.Role.STUDENT),
     __param(0, (0, graphql_1.Args)('studentId')),
     __param(1, (0, graphql_1.Args)('classId')),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [Number, Number, user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], EnrollmentResolver.prototype, "enrollStudent", null);
 __decorate([

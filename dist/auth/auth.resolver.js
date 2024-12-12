@@ -35,8 +35,7 @@ let AuthResolver = class AuthResolver {
         return loginResult.access_token;
     }
     async register(username, password, role) {
-        await this.authService.register(username, password, role);
-        return true;
+        return this.authService.register(username, password, role);
     }
     async updateUser(id, username, password) {
         const numericId = parseInt(id, 10);
@@ -60,7 +59,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "login", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => Boolean),
+    (0, graphql_1.Mutation)(() => user_entity_1.User),
     __param(0, (0, graphql_1.Args)('username')),
     __param(1, (0, graphql_1.Args)('password')),
     __param(2, (0, graphql_1.Args)('role')),

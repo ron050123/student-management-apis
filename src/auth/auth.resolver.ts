@@ -28,14 +28,13 @@ export class AuthResolver {
   return loginResult.access_token;
 }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => User)
   async register(
     @Args('username') username: string,
     @Args('password') password: string,
     @Args('role') role: Role,
-  ): Promise<boolean> {
-    await this.authService.register(username, password, role);
-    return true;
+  ): Promise<User> {
+    return this.authService.register(username, password, role);
   }
 
   @Mutation(() => User)

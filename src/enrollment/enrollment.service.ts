@@ -21,7 +21,12 @@ export class EnrollmentService {
     const enrollment = this.enrollmentRepository.create({ student, class: classEntity });
     classEntity.currentStudentsCount++;
     await this.classRepository.save(classEntity);
-    return this.enrollmentRepository.save(enrollment);
+
+    const selfEnrollment = await this.enrollmentRepository.save(enrollment);
+    console.log("A: ", selfEnrollment)
+
+    const recheckEnrollment = this.enrollmentRepository.findOne({ where: { id: selfEnrollment.id }, relations: ['class', 'student'] });
+    return recheckEnrollment;
   }
 
   async findEnrollmentsByStudent(student: User): Promise<Enrollment[]> {
