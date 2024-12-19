@@ -1,5 +1,8 @@
 version: '3.8'
 
+include:
+- hasura/compose.yml
+
 services:
   app:
     image: vutrannexlab/student-management-apis-app:latest
@@ -27,5 +30,3 @@ services:
 
 volumes:
   postgres_data:
-
-  
