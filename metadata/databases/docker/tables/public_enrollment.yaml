@@ -1,0 +1,10 @@
+table:
+  name: enrollment
+  schema: public
+object_relationships:
+  - name: class
+    using:
+      foreign_key_constraint_on: classId
+  - name: user
+    using:
+      foreign_key_constraint_on: studentId

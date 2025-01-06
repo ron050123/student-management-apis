@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { GqlAuthGuard } from './gql-auth.guard';
 import { RolesGuard } from './roles.guard';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -18,5 +19,6 @@ import { RolesGuard } from './roles.guard';
     }),
   ],
   providers: [AuthService, AuthResolver, JwtStrategy, GqlAuthGuard, RolesGuard],
+  controllers: [AuthController],
 })
 export class AuthModule {}

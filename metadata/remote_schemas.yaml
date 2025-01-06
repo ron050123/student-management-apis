@@ -1,0 +1,8 @@
+- name: docker_app_schema
+  definition:
+    url: http://host.docker.internal:3000/graphql
+    timeout_seconds: 60
+    customization:
+      root_fields_namespace: remote
+    forward_client_headers: true
+  comment: ""

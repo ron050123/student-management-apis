@@ -1,0 +1,18 @@
+table:
+  name: class
+  schema: public
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: teacherId
+  - name: userByClassleaderid
+    using:
+      foreign_key_constraint_on: classLeaderId
+array_relationships:
+  - name: enrollments
+    using:
+      foreign_key_constraint_on:
+        column: classId
+        table:
+          name: enrollment
+          schema: public

@@ -1,0 +1,40 @@
+actions:
+  - name: classes
+    definition:
+      kind: ""
+      handler: http://host.docker.internal:3000/graphql
+      forward_client_headers: true
+  - name: createClass
+    definition:
+      kind: asynchronous
+      handler: http://host.docker.internal:3000/graphql
+  - name: register
+    definition:
+      kind: asynchronous
+      handler: http://host.docker.internal:3000/graphql
+      forward_client_headers: true
+      response_transform:
+        body:
+          action: transform
+          template: |-
+            {
+              "response": {{$body}}
+            }
+        template_engine: Kriti
+        version: 2
+  - name: searchClasses
+    definition:
+      kind: ""
+      handler: http://host.docker.internal:3000/graphql
+custom_types:
+  enums: []
+  input_objects:
+    - name: CreateUserDto
+    - name: CreateClassDto
+  objects:
+    - name: Class
+    - name: Enrollment
+    - name: User
+    - name: Query
+    - name: Mutation
+  scalars: []
