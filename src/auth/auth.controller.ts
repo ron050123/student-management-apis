@@ -30,10 +30,14 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body('input') input: LoginInput) {
-      const result = await this.authService.login({ username: input.username, password: input.password, });
-      return { access_token: result.access_token };
-  }
+    @Body('input') input: LoginInput): Promise<{ access_token: string }> {
+      const user = await this.authService.validateUser(input.username, input.password);
+      if (!user) {
+        throw new Error('Invalid credentials');
+      }
+      const loginResult = await this.authService.login(user);
+      return {access_token: loginResult.access_token}
+    }
   
   @Put('update/:id')
   async updateUser(

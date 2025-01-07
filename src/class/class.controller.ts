@@ -15,6 +15,11 @@ import { ClassService } from './class.service';
 import { Class } from './class.entity';
 import { User } from '../user/user.entity';
 import { CreateClassDto } from '../dto/create-class.dto';
+import { UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { Role } from '../user/role.enum';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('classes')
 export class ClassController {
@@ -25,6 +30,9 @@ export class ClassController {
   ) {}
 
   @Post()
+  @UsePipes(new ValidationPipe())
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER)
   async createClass(@Body('input') body: { createClassDto: CreateClassDto }): Promise<Class> {
     const { createClassDto } = body;
 
@@ -58,11 +66,15 @@ export class ClassController {
   }
 
   @Get()
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.STUDENT)
   async findAllClasses(): Promise<Class[]> {
     return this.classService.findAllClasses();
   }
 
   @Post(':id')
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.STUDENT)
   async findClassById(@Body('input') input: { id: number }): Promise<Class> {
   const foundClass = await this.classService.findClassById(input.id);
   if (!foundClass) {
@@ -72,6 +84,9 @@ export class ClassController {
 }
 
 @Put(':id')
+@UsePipes(new ValidationPipe())
+@UseGuards(GqlAuthGuard, RolesGuard)
+@Roles(Role.TEACHER)
 async updateClass(
   @Body('input')
   body: {
@@ -102,6 +117,8 @@ async updateClass(
 }
 
   @Delete(':id')
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER)
   async deleteClass(@Body('input') input: { id: number }): Promise<boolean> {
     try {
       await this.classService.deleteClass(input.id);
@@ -112,6 +129,8 @@ async updateClass(
   }
 
   @Post('search')
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER, Role.STUDENT)
   async searchClasses(
   @Body('input') input: { name?: string; teacherName?: string; classLeaderName?: string }
 ): Promise<Class[]> {
