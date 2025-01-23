@@ -57,7 +57,8 @@ export class ClassController {
       classLeader.id = classLeaderId;
     }
 
-    const createdClass = await this.classService.createClass(name, subject, teacher, classLeader);
+    const createdAt = new Date();
+    const createdClass = await this.classService.createClass(name, subject, teacher, classLeader, createdAt);
 
     return {
       ...createdClass,
@@ -76,45 +77,38 @@ export class ClassController {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles(Role.TEACHER, Role.STUDENT)
   async findClassById(@Body('input') input: { id: number }): Promise<Class> {
-  const foundClass = await this.classService.findClassById(input.id);
-  if (!foundClass) {
-    throw new HttpException('Class not found', HttpStatus.NOT_FOUND);
-  }
-  return foundClass;
+    return this.classService.findClassById(input.id);
 }
 
-@Put(':id')
-@UsePipes(new ValidationPipe())
-@UseGuards(GqlAuthGuard, RolesGuard)
-@Roles(Role.TEACHER)
-async updateClass(
-  @Body('input')
-  body: {
+  @Put(':id')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(Role.TEACHER)
+  async updateClass(
+    @Body('input')
+    body: {
     id: string;
     name: string;
     subject: string;
     classLeaderId: number;
     teacherId: number;
-  },
-): Promise<Class> {
-  const classLeader = await this.userRepository.findOne({ where: { id: body.classLeaderId } });
-  const teacher = await this.userRepository.findOne({ where: { id: body.teacherId } });
-  
-  if (!classLeader) {
-    throw new HttpException('Class Leader not found', HttpStatus.NOT_FOUND);
+    },
+  ): Promise<Class> {
+    const classLeader = await this.userRepository.findOne({ where: { id: body.classLeaderId } });
+    const teacher = await this.userRepository.findOne({ where: { id: body.teacherId } });
+    if (!classLeader) {
+      throw new HttpException('Class Leader not found', HttpStatus.NOT_FOUND);
+    }
+    if (!teacher) {
+      throw new HttpException('Teacher not found', HttpStatus.NOT_FOUND);
+    }
+    const updatedClass = await this.classService.updateClass(Number(body.id), body.name, body.subject, classLeader);
+    return {
+      ...updatedClass,
+      enrollments: updatedClass.enrollments || [],
+      teacher: updatedClass.teacher || teacher,
+    };
   }
-  
-  if (!teacher) {
-    throw new HttpException('Teacher not found', HttpStatus.NOT_FOUND);
-  }
-
-  const updatedClass = await this.classService.updateClass(Number(body.id), body.name, body.subject, classLeader);
-  return {
-    ...updatedClass,
-    enrollments: updatedClass.enrollments || [],
-    teacher: updatedClass.teacher || teacher,
-  };
-}
 
   @Delete(':id')
   @UseGuards(GqlAuthGuard, RolesGuard)
@@ -133,12 +127,50 @@ async updateClass(
   @Roles(Role.TEACHER, Role.STUDENT)
   async searchClasses(
   @Body('input') input: { name?: string; teacherName?: string; classLeaderName?: string }
-): Promise<Class[]> {
-  const { name, teacherName, classLeaderName } = input;
-  const classes = await this.classService.searchClasses(name, teacherName, classLeaderName);
-  return classes.map(classEntity => ({
-    ...classEntity,
-    enrollments: classEntity.enrollments || [],
-  }));
-}
+  ): Promise<Class[]> {
+    const { name, teacherName, classLeaderName } = input;
+    const classes = await this.classService.searchClasses(name, teacherName, classLeaderName);
+    return classes.map(classEntity => ({
+      ...classEntity,
+      enrollments: classEntity.enrollments || [],
+    }));
+  }
+
+  @Post('events/checkAndDeleteClasses')
+  async checkAndDeleteClasses(@Body() payload: any): Promise<void> {
+    console.log('Received payload:', payload);
+    try {
+      const scheduledTime = payload.scheduled_time || payload.payload.scheduled_time;
+      if (!scheduledTime) {
+        throw new HttpException('Invalid payload: Missing scheduled_time', HttpStatus.BAD_REQUEST);
+      }
+      console.log(`Scheduled time: ${scheduledTime}`);
+      await this.classService.checkAndDeleteClasses();
+      console.log('Successfully handled event to check and delete classes');
+    } catch (error) {
+      console.error('Error checking and deleting classes:', error);
+      throw new HttpException('Failed to check and delete classes', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('events/checkAndSetInProgress')
+  async checkAndSetInProgress(@Body() payload: any): Promise<void> {
+    console.log('Received payload:', payload);
+    try {
+      const { event } = payload;
+      const classId = event.data.new.classId;
+      const classEntity = await this.classService.findClassById(classId);
+      if (!classEntity) {
+        throw new HttpException('Class not found', HttpStatus.NOT_FOUND);
+      }
+      if (classEntity.currentStudentsCount >= 10) {
+        classEntity.inProgress = true;
+        await this.classService.updateClassStatus(classEntity);
+        console.log(`Class ${classId} set to in progress`);
+      }
+    } catch (error) {
+      console.error('Error checking and setting class in progress:', error);
+      throw new HttpException('Failed to check and set class in progress', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

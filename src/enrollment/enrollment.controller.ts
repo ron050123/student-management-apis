@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, UnauthorizedException, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from '../user/user.entity';
 import { Enrollment } from './enrollment.entity';
 import { EnrollmentService } from './enrollment.service';
@@ -63,5 +63,20 @@ export class EnrollmentController {
     const { id } = input;
     await this.enrollmentService.removeEnrollment(id);
     return true;
+  }
+
+  @Post('events/checkAndRemoveEnrollment')
+  async checkAndRemoveEnrollment(@Body() payload: any): Promise<void> {
+    console.log('Received payload:', payload);
+    try {
+      const { event } = payload;
+      const enrollmentId = event.data.old.id;
+
+      await this.enrollmentService.removeEnrollment(enrollmentId);
+      console.log(`Enrollment ${enrollmentId} removed successfully`);
+    } catch (error) {
+      console.error('Error removing enrollment:', error);
+      throw new HttpException('Failed to remove enrollment', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

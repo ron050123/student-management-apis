@@ -30,6 +30,14 @@ export class Class {
   @Column({ default: 0 })
   currentStudentsCount: number;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  createdAt: Date;
+
+  @Field(() => Boolean)
+  @Column({ default: false })
+  inProgress: boolean;
+
   @Field(() => [Enrollment])
   @OneToMany(() => Enrollment, (enrollment) => enrollment.class)
   enrollments: Enrollment[];

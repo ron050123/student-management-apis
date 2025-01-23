@@ -1,5 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsOptional, IsDate } from 'class-validator';
 
 @InputType()
 export class CreateClassDto {
@@ -12,6 +12,11 @@ export class CreateClassDto {
   @IsString()
   @IsNotEmpty()
   subject: string;
+
+  @Field()
+  @IsDate()
+  @IsOptional()
+  createdAt: Date;
 
   @Field(() => Int)
   @IsInt()

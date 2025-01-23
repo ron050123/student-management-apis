@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Enrollment } from './enrollment.entity';
@@ -15,18 +15,18 @@ export class EnrollmentService {
   ) {}
 
   async enrollStudent(student: User, classEntity: Class): Promise<Enrollment> {
-    if (isNaN(classEntity.currentStudentsCount)) {
-      classEntity.currentStudentsCount = 0; 
+    const classToUpdate = await this.classRepository.findOne({ where: { id: classEntity.id } });
+    if (!classToUpdate) {
+      throw new Error('Class not found');
     }
-    const enrollment = this.enrollmentRepository.create({ student, class: classEntity });
-    classEntity.currentStudentsCount++;
-    await this.classRepository.save(classEntity);
-
-    const selfEnrollment = await this.enrollmentRepository.save(enrollment);
-    console.log("A: ", selfEnrollment)
-
-    const recheckEnrollment = this.enrollmentRepository.findOne({ where: { id: selfEnrollment.id }, relations: ['class', 'student'] });
-    return recheckEnrollment;
+    if (isNaN(classToUpdate.currentStudentsCount)) {
+      classToUpdate.currentStudentsCount = 0;
+    }
+    classToUpdate.currentStudentsCount++;
+    await this.classRepository.save(classToUpdate);
+    const enrollment = this.enrollmentRepository.create({ student, class: classToUpdate });
+    const savedEnrollment = await this.enrollmentRepository.save(enrollment);
+    return this.enrollmentRepository.findOne({ where: { id: savedEnrollment.id }, relations: ['class', 'student'] });
   }
 
   async findEnrollmentsByStudent(student: User): Promise<Enrollment[]> {
@@ -39,17 +39,20 @@ export class EnrollmentService {
 
   async removeEnrollment(id: number): Promise<void> {
     const enrollment = await this.enrollmentRepository.findOne({ where: { id }, relations: ['class'] });
-
     if (enrollment && enrollment.class) {
-      if (isNaN(enrollment.class.currentStudentsCount)) {
-        enrollment.class.currentStudentsCount = 0; 
+      if (enrollment.class.inProgress) {
+        throw new HttpException('Cannot remove enrollment from a class that is in progress', HttpStatus.FORBIDDEN);
       }
-
+      if (isNaN(enrollment.class.currentStudentsCount)) {
+        enrollment.class.currentStudentsCount = 0;
+      }
       if (enrollment.class.currentStudentsCount > 0) {
         enrollment.class.currentStudentsCount--;
         await this.classRepository.save(enrollment.class);
       }
-    await this.enrollmentRepository.delete(id);
+      await this.enrollmentRepository.delete(id);
+    } else {
+      throw new HttpException('Enrollment not found', HttpStatus.NOT_FOUND);
     }
   }
 }

@@ -21,17 +21,15 @@ export class ClassResolver {
     @Args('createClassDto') createClassDto: CreateClassDto,
   ): Promise<Class> {
     const { name, subject, teacherId, classLeaderId } = createClassDto;
-
     const teacher = new User();
     teacher.id = teacherId;
-
     let classLeader: User | null = null;
     if (classLeaderId) {
       classLeader = new User();
       classLeader.id = classLeaderId;
     }
-
-    return this.classService.createClass(name, subject, teacher, classLeader);
+    const createdAt = new Date();
+    return this.classService.createClass(name, subject, teacher, classLeader, createdAt);
   }
 
   @Query(() => [Class])

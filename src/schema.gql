@@ -9,8 +9,15 @@ type Class {
   teacher: User!
   classLeader: User
   currentStudentsCount: Int!
+  createdAt: DateTime
+  inProgress: Boolean!
   enrollments: [Enrollment!]!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Enrollment {
   id: Int!
@@ -56,6 +63,7 @@ input CreateUserDto {
 input CreateClassDto {
   name: String!
   subject: String!
+  createdAt: DateTime!
   teacherId: Int!
   classLeaderId: Int
 }
